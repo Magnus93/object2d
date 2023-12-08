@@ -1,0 +1,38 @@
+body {
+	background-color: darkred;
+}
+
+h1{
+	padding-top: 20px;
+	padding-left: 20px;
+	color: white;
+}
+h2{
+	color: white;
+}
+p {
+	color: white;
+}
+
+#main {
+	padding: 0 auto;
+	margin: 0 auto;		/*center*/
+	padding: 0px;
+	width: 980px;
+	height: 700px;
+	background-color: black;
+
+}
+
+#canvasSpace {
+	background-color: #664444;
+	width: 100%;
+	padding: 0px;
+	float: left;
+}
+
+canvas {
+	padding: 10px;
+	position: center;
+	border-width: 0px;
+}
