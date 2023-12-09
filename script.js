@@ -1,6 +1,8 @@
 let canvas;
 let canvasContext;
-const polygons = []
+const rigids = []
+const FPS = 30;
+const dt = 1000/FPS;
 
 window.onload = function() {
 	console.log("onloaded!");
@@ -8,20 +10,23 @@ window.onload = function() {
 	canvasContext = canvas.getContext("2d");
 	console.log(canvasContext)
 	init();
-	const FPS = 30;
 	setInterval(() => {
 		update();
-	}, 1000/FPS);
+	}, dt);
 }
 
 function init() {
-	polygons.push(new Polygon([[10,20],[10,-20],[-10,-20],[-10,20]], [50, 100], 0.1, "#ff0000"))
+	const rectangleShape = [[10,20],[10,-20],[-10,-20],[-10,20]]
+	const rigids1 = new RigidObject(rectangleShape, [80, 120], 0.1, "#ff3333")
+	rigids1.velocity = [0.05, 0.025]
+	rigids1.rotationalVelocity = 0.0002
+	new RigidObject(rectangleShape, [400, 300], 0.1, "#33ff33")
+	
 }
 
 function update() {
 	clearCanvas()
-	polygons.forEach(p => p.draw());
-	polygons.forEach(p => p.rotation += 0.1)
+	rigids.forEach(r => r.update())
 }
 
 function clearCanvas() {
@@ -33,32 +38,33 @@ function clearCanvas() {
 
 class RigidObject {
 	/**
-     * someProperty is an example property that is set to `true`
-     * @property {[number, number][]} shape
-		 * @property {[number, number]} velocity	 
-		 * @property {[number, number]} position
+     * @property {Spacial} spacial
+		 * @property {[number, number]} velocity
 		 * rotation is an angle of rotation in radious
-		 * @property {number} rotation
 		 * @property {number} rotationalVelocity
-		 * @property {string} color
+		 * @property {Polygon} polygon
      */
-	shape
-	velocity = [0, 0]
-	position
-	rotationalVelocity = 0
-	rotation
-	color
+		velocity = [0, 0]
+		rotationalVelocity = 0
+		spacial
+		polygon
+
 	/**
-	 * @param {[number, number][]} shape 
-	 * @param {[number, number]} position 
-	 * @param {number} rotation 
-	 * @param {string} color 
+	 * @param {[number, number][]} shape
+	 * @param {[number, number]} position
+	 * @param {number} rotation
+	 * @param {string} color
 	 */
 	constructor(shape, position, rotation, color) {
-		this.shape = shape
-		this.position = position
-		this.rotation = rotation
-		this.color = color
+		this.spacial = new Spacial(shape, position, rotation)
+		this.polygon = new Polygon(this.spacial, color)
+		rigids.push(this)
+	}
+	update() {
+		this.spacial.position[0] += this.velocity[0] * dt
+		this.spacial.position[1] += this.velocity[1] * dt
+		this.spacial.rotation += this.rotationalVelocity * dt
+		this.polygon.draw()
 	}
 }
 
@@ -66,39 +72,30 @@ class RigidObject {
 class Polygon {
 	/**
      * someProperty is an example property that is set to `true`
-     * @property {[number, number][]} shape
-		 * @property {[number, number]} position
-		 * rotation is an angle of rotation in radious
-		 * @property {number} rotation
+		 * @property {Spacial} spacial
 		 * @property {string} color
      * @public
      */
-	shape
-	position
-	rotation
+	spacial
 	color
 	/**
-	 * @param {[number, number][]} shape 
-	 * @param {[number, number]} position 
-	 * @param {number} rotation 
+	 * @param {Spacial} spacial
 	 * @param {string} color 
 	 */
-	constructor(shape, position, rotation, color) {
-		this.shape = shape
-		this.position = position
-		this.rotation = rotation
+	constructor(spacial, color) {
+		this.spacial = spacial
 		this.color = color
 	}
 	draw() {
-		const sin = Math.sin(this.rotation);
-		const cos = Math.cos(this.rotation);
+		const sin = Math.sin(this.spacial.rotation);
+		const cos = Math.cos(this.spacial.rotation);
 		const globalVerticiesPositions = []
-		for(let i = 0; i < this.shape.length; i++) {
-			const x = this.shape[i][0]
-			const y = this.shape[i][1]
+		for(let i = 0; i < this.spacial.shape.length; i++) {
+			const x = this.spacial.shape[i][0]
+			const y = this.spacial.shape[i][1]
 			globalVerticiesPositions.push([
-				this.position[0] + x*cos - y*sin,
-				this.position[1] + x*sin + y*cos
+				this.spacial.position[0] + x*cos - y*sin,
+				this.spacial.position[1] + x*sin + y*cos
 			]) 
 			this.drawPoly(globalVerticiesPositions)
 		}
@@ -116,4 +113,27 @@ class Polygon {
 		canvasContext.closePath();
 		canvasContext.fill();
 	}
+}
+
+class Spacial {
+	/**
+     * @property {[number, number][]} shape
+		 * @property {[number, number]} position
+		 * rotation is an angle of rotation in radious
+		 * @property {number} rotation
+     */
+		shape
+		position
+		rotation
+			/**
+	 * @param {[number, number][]} shape
+	 * @param {[number, number]} position
+	 * @param {number} rotation
+	 */
+	constructor(shape, position, rotation) {
+		this.shape = shape
+		this.position = position
+		this.rotation = rotation
+	}
+
 }
