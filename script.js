@@ -120,21 +120,14 @@ class Polygon {
 	 */
 	constructor(spacial, color) {
 		this.spacial = spacial
+		console.log("spacial constuctor", this.spacial)
 		this.color = color
 	}
 	draw() {
-		const sin = Math.sin(this.spacial.rotation);
-		const cos = Math.cos(this.spacial.rotation);
-		const globalVerticiesPositions = []
-		for (let i = 0; i < this.spacial.shape.length; i++) {
-			const x = this.spacial.shape[i][0]
-			const y = this.spacial.shape[i][1]
-			globalVerticiesPositions.push([
-				this.spacial.position[0] + x * cos - y * sin,
-				this.spacial.position[1] + x * sin + y * cos
-			])
-			this.drawPoly(globalVerticiesPositions)
-		}
+		console.log("poly.draw, spacial", this.spacial)
+		const globalVerticiesPositions = this.spacial.getGlobalVertPositions()
+		console.log(globalVerticiesPositions)
+		this.drawPoly(globalVerticiesPositions)
 	}
 	/**
 	 * @param {[number,number][]} verticies 
@@ -172,17 +165,17 @@ class Spacial {
 		this.rotation = rotation
 	}
 	getGlobalVertPositions() {
-		const sin = Math.sin(this.spacial.rotation);
-		const cos = Math.cos(this.spacial.rotation);
+		const sin = Math.sin(this.rotation);
+		const cos = Math.cos(this.rotation);
 		const globalVerticiesPositions = []
-		for (let i = 0; i < this.spacial.shape.length; i++) {
-			const x = this.spacial.shape[i][0]
-			const y = this.spacial.shape[i][1]
+		for (let i = 0; i < this.shape.length; i++) {
+			const x = this.shape[i][0]
+			const y = this.shape[i][1]
 			globalVerticiesPositions.push([
-				this.spacial.position[0] + x * cos - y * sin,
-				this.spacial.position[1] + x * sin + y * cos
+				this.position[0] + x * cos - y * sin,
+				this.position[1] + x * sin + y * cos
 			])
-			return globalVerticiesPositions
 		}
+		return globalVerticiesPositions
 	}
 }
