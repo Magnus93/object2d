@@ -27,10 +27,7 @@ function init() {
 function update() {
 	clearCanvas()
 	rigids.forEach(r => r.update())
-}
-
-function detectColisions() {
-	rigids
+	ColideDetector.detectColisions()	
 }
 
 function clearCanvas() {
@@ -45,10 +42,10 @@ class ColideDetector {
 	static relationships = []
 	static addRigit(rigid) {
 		rigids.forEach(r => {
-			this.relationships.push(
-				{ rigid: r, maxVertDistance: this.#calcMaxVertDistanceSquared(r) },
-				{ rigid, maxVertDistance: this.#calcMaxVertDistanceSquared(rigid) }
-			)
+			this.relationships.push([
+				{ rigid: r, maxVertDistanceSquared: this.calcMaxVertDistanceSquared(r) },
+				{ rigid, maxVertDistanceSquared: this.calcMaxVertDistanceSquared(rigid) }
+			])
 		})
 		rigids.push(rigid)
 	}
@@ -56,18 +53,24 @@ class ColideDetector {
 	 * 
 	 * @param {Rigid} rigid 
 	 */
-	static #calcMaxVertDistanceSquared(rigid) {
+	static calcMaxVertDistanceSquared(rigid) {
 		return Math.max(...rigid.spacial.shape.map(point => point[0] * point[0] + point[1] * point[1]))
 	}
-	detectColisions() {
-		relationships.forEach(relationship => this.#detectColision(relationship))
+	static detectColisions() {
+		this.relationships.forEach(ColideDetector.detectColision)
 	}
 	/**
 	 * 
 	 * @param {[{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}]} relationship 
 	 */
-	#detectColision(relationship) {
-		const xDistance = relationship.rigid.spacial.getGlobalVertPositions()
+	static detectColision(relationship) {
+		const pos1 = relationship[0].rigid.spacial.position
+		const pos2 = relationship[1].rigid.spacial.position
+		const xDist = pos1[0] - pos2[0]
+		const yDist = pos1[1] - pos2[1]
+		const squareDistance = xDist*xDist + yDist*yDist
+		if (squareDistance < relationship[0].maxVertDistanceSquared + relationship[1].maxVertDistanceSquared)
+			console.log("Possible collition")
 	}
 }
 
@@ -120,13 +123,10 @@ class Polygon {
 	 */
 	constructor(spacial, color) {
 		this.spacial = spacial
-		console.log("spacial constuctor", this.spacial)
 		this.color = color
 	}
 	draw() {
-		console.log("poly.draw, spacial", this.spacial)
 		const globalVerticiesPositions = this.spacial.getGlobalVertPositions()
-		console.log(globalVerticiesPositions)
 		this.drawPoly(globalVerticiesPositions)
 	}
 	/**
