@@ -1,7 +1,7 @@
 
 
-function drawPoly(polyList, color) {
-	canvasContext.fillStyle = "red";
+function drawPoly(polyList: number[], color: string) {
+	canvasContext.fillStyle = color;
 	canvasContext.beginPath();
 
 	canvasContext.moveTo(polyList[0], polyList[1]);

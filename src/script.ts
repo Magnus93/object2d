@@ -1,13 +1,13 @@
-let canvas;
-let canvasContext;
-const rigids = []
+var canvas: HTMLCanvasElement;
+var canvasContext: CanvasRenderingContext2D;
+const rigids: Rigid[] = []
 const FPS = 30;
 const dt = 1000 / FPS;
 
 window.onload = function () {
 	console.log("onloaded!");
-	canvas = document.getElementById("myCanvas");
-	canvasContext = canvas.getContext("2d");
+	canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+	canvasContext = canvas.getContext("2d") ?? canvasContext;
 	console.log(canvasContext)
 	init();
 	setInterval(() => {
@@ -16,7 +16,7 @@ window.onload = function () {
 }
 
 function init() {
-	const rectangleShape = [[10, 20], [10, -20], [-10, -20], [-10, 20]]
+	const rectangleShape: [number, number][] = [[10, 20], [10, -20], [-10, -20], [-10, 20]]
 	const rigids1 = new Rigid(rectangleShape, [80, 120], 0.1, "#ff3333")
 	rigids1.velocity = [0.05, 0.025]
 	rigids1.rotationalVelocity = 0.0002
@@ -36,11 +36,8 @@ function clearCanvas() {
 }
 
 class ColideDetector {
-	/**
-	 * @property {[{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}][]} relationships
-	 */
-	static relationships = []
-	static addRigit(rigid) {
+	static relationships: [{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}][] = []
+	static addRigit(rigid: Rigid) {
 		rigids.forEach(r => {
 			this.relationships.push([
 				{ rigid: r, maxVertDistanceSquared: this.calcMaxVertDistanceSquared(r) },
@@ -49,21 +46,14 @@ class ColideDetector {
 		})
 		rigids.push(rigid)
 	}
-	/**
-	 * 
-	 * @param {Rigid} rigid 
-	 */
-	static calcMaxVertDistanceSquared(rigid) {
+	
+	static calcMaxVertDistanceSquared(rigid: Rigid) {
 		return Math.max(...rigid.spacial.shape.map(point => point[0] * point[0] + point[1] * point[1]))
 	}
 	static detectColisions() {
 		this.relationships.forEach(ColideDetector.detectColision)
 	}
-	/**
-	 * 
-	 * @param {[{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}]} relationship 
-	 */
-	static detectColision(relationship) {
+	static detectColision(relationship: [{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}]) {
 		if (ColideDetector.closeEnough(relationship)) {
 			const verticies1 = relationship[0].rigid.polygon.spacial.getGlobalVertPositions()
 			const lines1 = ColideDetector.verticiesToLinesSegments(verticies1)
@@ -75,13 +65,8 @@ class ColideDetector {
 			}
 		}
 	}
-	/**
-	 * 
-	 * @param {[[number, number],[number, number]][]} lines1 
-	 * @param {[[number, number],[number, number]][]} lines2 
-	 * @returns {[number, number] | false}
-	 */
-	static intersect(lines1, lines2) {
+
+	static intersect(lines1: [[number, number],[number, number]][], lines2: [[number, number],[number, number]][]): [number, number] | false {
 		for(const line1 of lines1) {
 			for(const line2 of lines2) {
 				const intersection = ColideDetector.linesIntersect(line1, line2)
@@ -89,8 +74,9 @@ class ColideDetector {
 					return intersection
 			}
 		}
+		return false
 	}
-	static closeEnough(relationship) {
+	static closeEnough(relationship: [{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}]) {
 		const pos1 = relationship[0].rigid.spacial.position
 		const pos2 = relationship[1].rigid.spacial.position
 		const xDist = pos1[0] - pos2[0]
@@ -98,13 +84,7 @@ class ColideDetector {
 		const squareDistance = xDist*xDist + yDist*yDist
 		return squareDistance < relationship[0].maxVertDistanceSquared + relationship[1].maxVertDistanceSquared
 	}
-	/**
-	 * 
-	 * @param {[[number, number],[number, number]]} line1 
-	 * @param {[[number, number],[number, number]]} line2 
-	 * @returns {[number, number] | false}
-	 */
-	static linesIntersect(line1, line2) {
+	static linesIntersect(line1: [[number, number],[number, number]], line2: [[number, number],[number, number]]) {
 		const intersectPoint = this.findIntersection(line1, line2)
 		return (
 			ColideDetector.pointWithinLineSegment(intersectPoint, line1) && 
@@ -113,23 +93,14 @@ class ColideDetector {
 		? intersectPoint 
 		: false
 	}
-	/**
-	 * @param {[number, number][]} vertecies 
-	 * @returns {[[number, number],[number, number]][]}
-	 */
-	static verticiesToLinesSegments(vertecies) {
-		const lines = []
+	static verticiesToLinesSegments(vertecies: [number, number][]): [[number, number],[number, number]][] {
+		const lines: [[number, number],[number, number]][] = []
 		for(let i = 0; i < vertecies.length - 1; i++) {
 			lines.push([vertecies[i], vertecies[i+1]])
 		}
 		return lines
 	}
-	/**
-	 * @param {[[number, number],[number, number]]} line1 
-	 * @param {[[number, number],[number, number]]} line2 
-	 * @returns {[number, number]}
-	 */
-	static findIntersection(line1, line2) {
+	static findIntersection(line1: [[number, number],[number, number]], line2: [[number, number],[number, number]]): [number, number] {
 		const xLength1 = line1[1][0] - line1[0][0]
 		const yLength1 = line1[1][1] - line1[0][1]
 		const deriv1 = yLength1 / xLength1
@@ -145,12 +116,7 @@ class ColideDetector {
 		return [intersectX, intersectY]
 	}
 
-	/**
-	 * 
-	 * @param {[number, number]} point 
-	 * @param {[[number, number], [number, number]]} lineSegment 
-	 */
-	static pointWithinLineSegment(point, lineSegment) {
+	static pointWithinLineSegment(point: [number, number], lineSegment: [[number, number], [number, number]]) {
 		const minX = Math.min(lineSegment[0][0], lineSegment[1][0])
 		const maxX = Math.max(lineSegment[0][0], lineSegment[1][0])
 		const minY = Math.min(lineSegment[0][1], lineSegment[1][1])
@@ -162,25 +128,12 @@ class ColideDetector {
 
 
 class Rigid {
-	/**
-		 * @property {Spacial} spacial
-		 * @property {[number, number]} velocity
-		 * rotation is an angle of rotation in radious
-		 * @property {number} rotationalVelocity
-		 * @property {Polygon} polygon
-		 */
-	velocity = [0, 0]
+	velocity: [number, number] = [0, 0]
 	rotationalVelocity = 0
-	spacial
-	polygon
+	spacial: Spacial
+	polygon: Polygon
 
-	/**
-	 * @param {[number, number][]} shape
-	 * @param {[number, number]} position
-	 * @param {number} rotation
-	 * @param {string} color
-	 */
-	constructor(shape, position, rotation, color) {
+	constructor(shape: [number, number][], position: [number, number], rotation: number, color: string) {
 		this.spacial = new Spacial(shape, position, rotation)
 		this.polygon = new Polygon(this.spacial, color)
 		ColideDetector.addRigit(this)
@@ -195,19 +148,9 @@ class Rigid {
 
 
 class Polygon {
-	/**
-		 * someProperty is an example property that is set to `true`
-		 * @property {Spacial} spacial
-		 * @property {string} color
-		 * @public
-		 */
-	spacial
-	color
-	/**
-	 * @param {Spacial} spacial
-	 * @param {string} color 
-	 */
-	constructor(spacial, color) {
+	spacial: Spacial
+	color: string
+	constructor(spacial: Spacial, color: string) {
 		this.spacial = spacial
 		this.color = color
 	}
@@ -215,13 +158,10 @@ class Polygon {
 		const globalVerticiesPositions = this.spacial.getGlobalVertPositions()
 		this.drawPoly(globalVerticiesPositions)
 	}
-	/**
-	 * @param {[number,number][]} verticies 
-	 */
-	drawPoly(verticies) {
+	drawPoly(verticies: [number,number][]) {
 		canvasContext.fillStyle = this.color;
 		canvasContext.beginPath();
-		canvasContext.moveTo(verticies[0], verticies[1]);
+		canvasContext.moveTo(verticies[0][0], verticies[0][1]);
 		for (let i = 0; i < verticies.length; i++) {
 			canvasContext.lineTo(verticies[i][0], verticies[i][1]);
 		}
@@ -231,32 +171,18 @@ class Polygon {
 }
 
 class Spacial {
-	/**
-		 * @property {[number, number][]} shape
-		 * @property {[number, number]} position
-		 * rotation is an angle of rotation in radious
-		 * @property {number} rotation
-		 */
-	shape
-	position
-	rotation
-	/**
-* @param {[number, number][]} shape
-* @param {[number, number]} position
-* @param {number} rotation
-*/
-	constructor(shape, position, rotation) {
+	shape: [number, number][]
+	position: [number, number]
+	rotation: number
+	constructor(shape: [number, number][], position: [number, number], rotation: number) {
 		this.shape = shape
 		this.position = position
 		this.rotation = rotation
 	}
-	/**
-	 * @returns {[number, number][]}
-	 */
-	getGlobalVertPositions() {
+	getGlobalVertPositions(): [number, number][] {
 		const sin = Math.sin(this.rotation);
 		const cos = Math.cos(this.rotation);
-		const globalVerticiesPositions = []
+		const globalVerticiesPositions: [number, number][] = []
 		for (let i = 0; i < this.shape.length; i++) {
 			const x = this.shape[i][0]
 			const y = this.shape[i][1]
@@ -269,11 +195,7 @@ class Spacial {
 	}
 }
 
-/**
- * 
- * @param {[number,number]} point 
- */
-function drawMarking(point, color) {
+function drawMarking(point: [number, number], color: string) {
 	canvasContext.beginPath();
 	canvasContext.arc(point[0], point[1], 5, 0, 2*Math.PI);
 	canvasContext.fillStyle = color;

@@ -1,0 +1,26 @@
+{
+  "name": "object2d",
+  "version": "1.0.0",
+  "description": "2d rigid objects sim",
+  "main": "src/script.js",
+  "scripts": {
+    "test": "echo 'no test available'",
+    "build": "tsc && npm run build:cp-public",
+    "build:cp-public": "cp ./public/** ./dist",
+    "type": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Magnus93/object2d.git"
+  },
+  "author": "Magnus Gustafsson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Magnus93/object2d/issues"
+  },
+  "homepage": "https://github.com/Magnus93/object2d#readme",
+  "devDependencies": {
+    "tsc": "^2.0.4",
+    "typescript": "^5.3.3"
+  }
+}
