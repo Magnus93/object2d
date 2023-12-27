@@ -68,8 +68,12 @@ class ColideDetector {
 				const tempVelcity = relationship[0].rigid.velocity
 				relationship[0].rigid.velocity = relationship[1].rigid.velocity
 				relationship[1].rigid.velocity = tempVelcity
-				// relationship[0].rigid.colide(relationship[1].rigid, intersection)
-				// relationship[1].rigid.colide(relationship[0].rigid, intersection)
+				
+				const forceA = relationship[0].rigid.calculateRigidColisionForce(relationship[1].rigid)
+				const forceB = relationship[1].rigid.calculateRigidColisionForce(relationship[0].rigid)
+				
+				relationship[0].rigid.applyForce(forceA, intersection)
+				relationship[1].rigid.applyForce(forceB, intersection)
 			}
 		}
 	}
@@ -153,8 +157,13 @@ class Rigid {
 		this.spacial.rotation += this.rotationalVelocity * dt
 		this.polygon.draw()
 	}
-	colide(colidedWith: Rigid, colisionPoint: Point) {
-		// TODO
+	calculateRigidColisionForce(colidedWith: Rigid) {
+		const force: Point = Point.divide(Point.multiply(colidedWith.velocity, colidedWith.weight), dt)
+		return force
+	}
+	applyForce(force: Point, colisionPoint: Point) {
+		// const forceRotational
+		// const forceMoval
 	}
 }
 
@@ -218,4 +227,15 @@ function drawMarking(point: Point, color: string) {
 
 
 type Point = [number, number]
+namespace Point {
+	export function multiply(point: Point, multiplier: number): Point {
+		return [point[0] * multiplier, point[1] * multiplier]
+	}
+	export function divide(point: Point, denominator: number): Point {
+		return [point[0] / denominator, point[1] / denominator]
+	}
+}
+
+
+
 type Line = [Point, Point]
