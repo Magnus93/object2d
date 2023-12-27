@@ -162,6 +162,7 @@ class Rigid {
 		return force
 	}
 	applyForce(force: Point, colisionPoint: Point) {
+		const [forceRotationalSize, forceMovalSize] = Point.rotate(force, -this.spacial.rotation)
 		// const forceRotational
 		// const forceMoval
 	}
