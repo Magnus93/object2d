@@ -234,8 +234,20 @@ namespace Point {
 	export function divide(point: Point, denominator: number): Point {
 		return [point[0] / denominator, point[1] / denominator]
 	}
+	export function rotate(point: Point, radians: number): Point {
+		const sin = Math.sin(radians);
+		const cos = Math.cos(radians);
+		return [
+			point[0] * cos - point[1] * sin, 
+			point[1] * sin + point[1] * cos
+		]
+	}
+	export function translate(point: Point, translation: Point) {
+		return [
+			point[0] + translation[0],
+			point[1] + translation[1]
+		]
+	}
 }
-
-
 
 type Line = [Point, Point]
