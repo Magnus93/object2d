@@ -65,6 +65,11 @@ class ColideDetector {
 			const intersection = ColideDetector.intersect(lines1, lines2)
 			if (intersection) {
 				drawMarking(intersection, "#ffffff")
+				const tempVelcity = relationship[0].rigid.velocity
+				relationship[0].rigid.velocity = relationship[1].rigid.velocity
+				relationship[1].rigid.velocity = tempVelcity
+				// relationship[0].rigid.colide(relationship[1].rigid, intersection)
+				// relationship[1].rigid.colide(relationship[0].rigid, intersection)
 			}
 		}
 	}
@@ -135,6 +140,7 @@ class Rigid {
 	rotationalVelocity = 0
 	spacial: Spacial
 	polygon: Polygon
+	weight = 1
 
 	constructor(shape: Point[], position: Point, rotation: number, color: string) {
 		this.spacial = new Spacial(shape, position, rotation)
@@ -146,6 +152,9 @@ class Rigid {
 		this.spacial.position[1] += this.velocity[1] * dt
 		this.spacial.rotation += this.rotationalVelocity * dt
 		this.polygon.draw()
+	}
+	colide(colidedWith: Rigid, colisionPoint: Point) {
+		// TODO
 	}
 }
 
