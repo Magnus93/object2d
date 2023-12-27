@@ -69,11 +69,12 @@ class ColideDetector {
 				relationship[0].rigid.velocity = relationship[1].rigid.velocity
 				relationship[1].rigid.velocity = tempVelcity
 				
-				const forceA = relationship[0].rigid.calculateRigidColisionForce(relationship[1].rigid)
-				const forceB = relationship[1].rigid.calculateRigidColisionForce(relationship[0].rigid)
-				
-				relationship[0].rigid.applyForce(forceA, intersection)
-				relationship[1].rigid.applyForce(forceB, intersection)
+				// Force should be same but opposite!!
+
+				// const forceA = relationship[0].rigid.calculateRigidColisionForce(relationship[1].rigid)
+				// const forceB = relationship[1].rigid.calculateRigidColisionForce(relationship[0].rigid)
+				// relationship[0].rigid.applyForce(forceA, intersection)
+				// relationship[1].rigid.applyForce(forceB, intersection)
 			}
 		}
 	}
@@ -158,13 +159,16 @@ class Rigid {
 		this.polygon.draw()
 	}
 	calculateRigidColisionForce(colidedWith: Rigid) {
-		const force: Point = Point.divide(Point.multiply(colidedWith.velocity, colidedWith.weight), dt)
+		const force: Point = Point.multiply(colidedWith.velocity, colidedWith.weight)
 		return force
 	}
 	applyForce(force: Point, colisionPoint: Point) {
 		const [forceRotationalSize, forceMovalSize] = Point.rotate(force, -this.spacial.rotation)
-		// const forceRotational
-		// const forceMoval
+		const forceRotational = Point.rotate([forceRotationalSize, 0], this.spacial.rotation)
+		// this.rotationalVelocity
+
+		const forceMoval = Point.rotate([0, forceMovalSize], this.spacial.rotation)
+		this.velocity = Point.translate(this.velocity, Point.divide(forceMoval, dt * this.weight))
 	}
 }
 
@@ -243,7 +247,7 @@ namespace Point {
 			point[1] * sin + point[1] * cos
 		]
 	}
-	export function translate(point: Point, translation: Point) {
+	export function translate(point: Point, translation: Point): Point {
 		return [
 			point[0] + translation[0],
 			point[1] + translation[1]
