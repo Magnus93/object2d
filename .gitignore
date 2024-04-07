@@ -1,0 +1,18 @@
+node_modules/
+*.d.js
+dist/
+build/
+*.js.map
+
+# Cache files  
+.eslintcache
+.npm
+*.tsbuildinfo# Directories
+
+.env.
+.env.test
+*.log
+logs
+npm-debug.log*
+.DS_Store
+notes.md
