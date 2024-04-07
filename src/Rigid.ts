@@ -2,7 +2,7 @@ import {Draw} from "./Draw"
 import { Settings } from "./Settings"
 import {state} from "./State"
 
-
+ /** Testing git stuff */
 export class ColideDetector {
 	static relationships: [{rigid: Rigid, maxVertDistanceSquared: number}, {rigid: Rigid, maxVertDistanceSquared: number}][] = []
 	static addRigit(rigid: Rigid) {
