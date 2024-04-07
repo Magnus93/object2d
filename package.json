@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo 'no test available'",
-    "build": "npm run build:clean && npm run build:cp-public && npm run type && npm run webpack",
+    "build": "npm run build:clean && mkdir ./dist && npm run build:cp-public && npm run type && npm run webpack",
     "build:clean": "rimraf ./dist",
     "build:cp-public": "cp ./public/** ./dist",
     "type": "tsc --noEmit",
@@ -29,7 +29,7 @@
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.1",
     "tsc": "^2.0.4",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.4",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   }
